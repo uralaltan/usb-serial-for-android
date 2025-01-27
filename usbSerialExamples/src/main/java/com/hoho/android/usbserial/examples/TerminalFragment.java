@@ -295,11 +295,15 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
             return;
         }
         try {
-        byte[] data = (str + '\n').getBytes();
+            byte[] data = (str + '\n').getBytes();
             SpannableStringBuilder spn = new SpannableStringBuilder();
-            spn.append("send " + data.length + " bytes\n");
-            spn.append(HexDump.dumpHexString(data)).append("\n");
-            spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorSendText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spn.append("Sending: ").append(str).append("\n");
+            spn.setSpan(
+            new ForegroundColorSpan(getResources().getColor(R.color.colorSendText)),
+                    0,
+                    spn.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
             receiveText.append(spn);
             usbSerialPort.write(data, WRITE_WAIT_MILLIS);
         } catch (Exception e) {
@@ -325,11 +329,10 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
     }
 
     private void receive(byte[] data) {
-        SpannableStringBuilder spn = new SpannableStringBuilder();
-        spn.append("receive " + data.length + " bytes\n");
-        if(data.length > 0)
-            spn.append(HexDump.dumpHexString(data)).append("\n");
-        receiveText.append(spn);
+        if (data.length > 0) {
+            String receivedText = new String(data);
+            receiveText.append(receivedText);
+        }
     }
 
     void status(String str) {

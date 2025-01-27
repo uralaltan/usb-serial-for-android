@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -131,12 +132,29 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
         View sendBtn = view.findViewById(R.id.send_btn);
         sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
         View receiveBtn = view.findViewById(R.id.receive_btn);
-        controlLines = new ControlLines(view);
         if(withIoManager) {
             receiveBtn.setVisibility(View.GONE);
         } else {
             receiveBtn.setOnClickListener(v -> read());
         }
+
+        Button actuatorButton = view.findViewById(R.id.button);
+        Button loadCellButton = view.findViewById(R.id.button2);
+        Button linearPotButton = view.findViewById(R.id.button3);
+
+        actuatorButton.setOnClickListener(v -> {
+            send("ACT");
+        });
+
+        loadCellButton.setOnClickListener(v -> {
+            send("LOAD");
+        });
+
+        linearPotButton.setOnClickListener(v -> {
+            send("LINEAR");
+        });
+
+        controlLines = new ControlLines(view);
         return view;
     }
 

@@ -112,6 +112,12 @@
         android:text="Linear Potentiometer On/Off" />
 
     <Button
+        android:id="@+id/button4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Debug Linear Pot. On/Off" />
+
+    <Button
         android:id="@+id/receive_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

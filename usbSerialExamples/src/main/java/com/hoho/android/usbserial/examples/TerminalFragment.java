@@ -56,7 +56,6 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
     private final BroadcastReceiver broadcastReceiver;
     private final Handler mainLooper;
     private TextView receiveText;
-    private ControlLines controlLines;
 
     private SerialInputOutputManager usbIoManager;
     private UsbSerialPort usbSerialPort;
@@ -159,7 +158,6 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
             send("LINDEBUG");
         });
 
-        controlLines = new ControlLines(view);
         return view;
     }
 
@@ -273,7 +271,6 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
             }
             status("connected");
             connected = true;
-            controlLines.start();
         } catch (Exception e) {
             status("connection failed: " + e.getMessage());
             disconnect();
@@ -282,7 +279,7 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
 
     private void disconnect() {
         connected = false;
-        controlLines.stop();
+
         if(usbIoManager != null) {
             usbIoManager.setListener(null);
             usbIoManager.stop();
@@ -346,90 +343,5 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
         receiveText.append(spn);
     }
 
-    class ControlLines {
-        private static final int refreshInterval = 200; // msec
 
-        private final Runnable runnable;
-        private final ToggleButton rtsBtn, ctsBtn, dtrBtn, dsrBtn, cdBtn, riBtn;
-
-        ControlLines(View view) {
-            runnable = this::run; // w/o explicit Runnable, a new lambda would be created on each postDelayed, which would not be found again by removeCallbacks
-
-            rtsBtn = view.findViewById(R.id.controlLineRts);
-            ctsBtn = view.findViewById(R.id.controlLineCts);
-            dtrBtn = view.findViewById(R.id.controlLineDtr);
-            dsrBtn = view.findViewById(R.id.controlLineDsr);
-            cdBtn = view.findViewById(R.id.controlLineCd);
-            riBtn = view.findViewById(R.id.controlLineRi);
-            rtsBtn.setOnClickListener(this::toggle);
-            dtrBtn.setOnClickListener(this::toggle);
-        }
-
-        private void toggle(View v) {
-            ToggleButton btn = (ToggleButton) v;
-            if (!connected) {
-                btn.setChecked(!btn.isChecked());
-                Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            String ctrl = "";
-            try {
-                if (btn.equals(rtsBtn)) { ctrl = "RTS"; usbSerialPort.setRTS(btn.isChecked()); }
-                if (btn.equals(dtrBtn)) { ctrl = "DTR"; usbSerialPort.setDTR(btn.isChecked()); }
-            } catch (IOException e) {
-                status("set" + ctrl + "() failed: " + e.getMessage());
-            }
-        }
-
-        private void run() {
-            if (!connected)
-                return;
-            try {
-                EnumSet<UsbSerialPort.ControlLine> controlLines = usbSerialPort.getControlLines();
-                rtsBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.RTS));
-                ctsBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.CTS));
-                dtrBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.DTR));
-                dsrBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.DSR));
-                cdBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.CD));
-                riBtn.setChecked(controlLines.contains(UsbSerialPort.ControlLine.RI));
-                mainLooper.postDelayed(runnable, refreshInterval);
-            } catch (Exception e) {
-                status("getControlLines() failed: " + e.getMessage() + " -> stopped control line refresh");
-            }
-        }
-
-        void start() {
-            if (!connected)
-                return;
-            try {
-                EnumSet<UsbSerialPort.ControlLine> controlLines = usbSerialPort.getSupportedControlLines();
-                if (!controlLines.contains(UsbSerialPort.ControlLine.RTS)) rtsBtn.setVisibility(View.INVISIBLE);
-                if (!controlLines.contains(UsbSerialPort.ControlLine.CTS)) ctsBtn.setVisibility(View.INVISIBLE);
-                if (!controlLines.contains(UsbSerialPort.ControlLine.DTR)) dtrBtn.setVisibility(View.INVISIBLE);
-                if (!controlLines.contains(UsbSerialPort.ControlLine.DSR)) dsrBtn.setVisibility(View.INVISIBLE);
-                if (!controlLines.contains(UsbSerialPort.ControlLine.CD))   cdBtn.setVisibility(View.INVISIBLE);
-                if (!controlLines.contains(UsbSerialPort.ControlLine.RI))   riBtn.setVisibility(View.INVISIBLE);
-                run();
-            } catch (Exception e) {
-                Toast.makeText(getActivity(), "getSupportedControlLines() failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                rtsBtn.setVisibility(View.INVISIBLE);
-                ctsBtn.setVisibility(View.INVISIBLE);
-                dtrBtn.setVisibility(View.INVISIBLE);
-                dsrBtn.setVisibility(View.INVISIBLE);
-                cdBtn.setVisibility(View.INVISIBLE);
-                cdBtn.setVisibility(View.INVISIBLE);
-                riBtn.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        void stop() {
-            mainLooper.removeCallbacks(runnable);
-            rtsBtn.setChecked(false);
-            ctsBtn.setChecked(false);
-            dtrBtn.setChecked(false);
-            dsrBtn.setChecked(false);
-            cdBtn.setChecked(false);
-            riBtn.setChecked(false);
-        }
-    }
 }

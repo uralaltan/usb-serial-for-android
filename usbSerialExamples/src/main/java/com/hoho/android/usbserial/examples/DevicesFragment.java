@@ -47,7 +47,7 @@ public class DevicesFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false);
         listAdapter = new ArrayAdapter<ListItem>(getActivity(), 0, listItems) {
             @NonNull
             @Override
@@ -82,7 +82,7 @@ public class DevicesFragment extends ListFragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_devices, menu);
+        // inflater.inflate(R.menu.menu_devices, menu);
     }
 
     @Override
@@ -93,35 +93,7 @@ public class DevicesFragment extends ListFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.refresh) {
-            refresh();
-            return true;
-        } else if (id ==R.id.baud_rate) {
-            final String[] values = getResources().getStringArray(R.array.baud_rates);
-            int pos = java.util.Arrays.asList(values).indexOf(String.valueOf(baudRate));
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Baud rate");
-            builder.setSingleChoiceItems(values, pos, (dialog, which) -> {
-                baudRate = Integer.parseInt(values[which]);
-                dialog.dismiss();
-            });
-            builder.create().show();
-            return true;
-        } else if (id ==R.id.read_mode) {
-            final String[] values = getResources().getStringArray(R.array.read_modes);
-            int pos = withIoManager ? 0 : 1; // read_modes[0]=event/io-manager, read_modes[1]=direct
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Read mode");
-            builder.setSingleChoiceItems(values, pos, (dialog, which) -> {
-                withIoManager = (which == 0);
-                dialog.dismiss();
-            });
-            builder.create().show();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     void refresh() {

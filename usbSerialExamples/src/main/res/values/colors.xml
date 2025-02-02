@@ -2,11 +2,14 @@
 <resources>
     <color name="colorPrimary">#CE0005</color>
     <color name="colorPrimaryDark">#CE0005</color>
-    <color name="colorAccent">#D8E33B</color>
+    <color name="colorAccent">#DB3200</color>
 
-    <color name="colorRecieveText">#00FF00</color>
-    <color name="colorSendText">#82CAFF</color>
-    <color name="colorStatusText">#FFDB58</color>
+    <color name="colorRecieveText">#DB3200</color>
+    <color name="colorSendText">#A80900</color>
+    <color name="colorStatusText">#DE9A0C</color>
 
     <color name="colorBackground">#f2f2f2</color>
+    <color name="colorLightBackground">#C2C2C2</color>
+
+    <color name="colorButton">#DE9A0C</color>
 </resources>

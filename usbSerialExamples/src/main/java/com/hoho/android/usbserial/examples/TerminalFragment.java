@@ -141,6 +141,7 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
         Button loadCellButton = view.findViewById(R.id.button2);
         Button linearPotButton = view.findViewById(R.id.button3);
         Button debugLinearPotButton = view.findViewById(R.id.button4);
+        Button ADXLButton = view.findViewById(R.id.button5);
 
         actuatorButton.setOnClickListener(v -> {
             send("ACT");
@@ -156,6 +157,10 @@ public class TerminalFragment extends Fragment implements SerialInputOutputManag
 
         debugLinearPotButton.setOnClickListener(v -> {
             send("LINDEBUG");
+        });
+
+        ADXLButton.setOnClickListener(v -> {
+            send("ADXL");
         });
 
         return view;
